@@ -69,19 +69,19 @@ export default class ThemeUpdater extends Plugin {
 	}
 
 	async notifyAboutUpdates() {
-		const trackerButtonID = 'theme-updater-notification-button';
+		const buttonID = 'theme-updater-notification-button';
 
 		new Notice(
 			stringToFragment(
 				`You have ${this.updates.length} theme update${
 					this.updates.length > 1 ? 's' : ''
-				} available.<br/><a id="${trackerButtonID}">See updates</a>`,
+				} available.<br/><a id="${buttonID}">View updates</a>`,
 			),
 
 			15000,
 		);
 
-		const buttonEl = document.getElementById(trackerButtonID);
+		const buttonEl = document.getElementById(buttonID);
 
 		if (buttonEl) {
 			// Bind the method to preserve the this context when running from top level Redux store middleware
