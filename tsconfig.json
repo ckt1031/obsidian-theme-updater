@@ -1,0 +1,29 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"baseUrl": ".",
+		"allowSyntheticDefaultImports": true,
+		"importHelpers": true,
+		"inlineSourceMap": true,
+		"inlineSources": true,
+		"isolatedModules": true,
+		"lib": ["ESNext", "DOM", "dom.iterable", "DOM.AsyncIterable"],
+		"module": "ESNext",
+		"target": "ES2018",
+		"moduleResolution": "Node",
+		"noEmit": true,
+		"noImplicitAny": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"resolveJsonModule": true,
+		"strictNullChecks": true,
+		"paths": {
+			"@/*": ["src/*"]
+		}
+	},
+	"include": ["**/*.ts", "*.mjs"],
+	"exclude": ["node_modules", "**/*.spec.ts"]
+}
