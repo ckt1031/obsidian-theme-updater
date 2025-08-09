@@ -4,4 +4,4 @@ Do you feel frustrated when you have to manually update your themes? This plugin
 
 You will be notified when there are updates available, simple and easy UI to update the themes by button.
 
-![Theme Updater](./docs/screenshot.png)
+![Theme Updater](./docs/Screenshot.png)
