@@ -45,6 +45,13 @@ export default async function updateTheme(
 
 		// Remove the update from the updates array
 		plugin.updates = plugin.updates.filter((t) => t.name !== theme.name);
+		// Update the themes array
+		plugin.themes = plugin.themes.map((t) => {
+			if (t.name === theme.name) {
+				return { ...t, version: theme.newVersion };
+			}
+			return t;
+		});
 
 		new Notice(`Theme ${theme.name} updated to version ${theme.newVersion}`);
 	} catch (error) {

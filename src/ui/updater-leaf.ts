@@ -72,9 +72,8 @@ export default class ThemeUpdaterView extends ItemView {
 
 		updateButton.addEventListener('click', async () => {
 			await updateTheme(this.plugin, theme, this.abortController);
-			const themeCard = this.contentEl.find(`#${themeCardID}`);
-
-			themeCard.remove();
+			// Reload the view
+			this.onOpen();
 		});
 	}
 

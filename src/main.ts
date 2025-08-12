@@ -35,8 +35,6 @@ export default class ThemeUpdater extends Plugin {
 			(leaf) => new ThemeUpdaterView(this, leaf),
 		);
 
-		this.themes = await loadThemes(this.app);
-
 		// Load after layout ready
 		this.app.workspace.onLayoutReady(async () => {
 			if (this.settings.checkOnStartup) {
@@ -52,6 +50,7 @@ export default class ThemeUpdater extends Plugin {
 	}
 
 	async checkForUpdates() {
+		this.themes = await loadThemes(this.app);
 		this.updates = await listUpdates(this.themes);
 
 		if (this.updates.length === 0) return;
