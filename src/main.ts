@@ -73,10 +73,20 @@ export default class ThemeUpdater extends Plugin {
 	}
 
 	showThemeUpdaterView() {
-		this.app.workspace.getLeaf('tab').setViewState({
-			type: THEME_UPDATER_VIEW_TYPE,
-			active: true,
+		// Only allow one view to be open at a time, then open the new view after closing
+		this.app.workspace.iterateAllLeaves((leaf) => {
+			if (leaf.view instanceof ThemeUpdaterView) {
+				this.app.workspace.detachLeavesOfType(THEME_UPDATER_VIEW_TYPE);
+			}
 		});
+
+		// Ensure the previous function (iterateAllLeaves) completes before opening the new view
+		setTimeout(() => {
+			this.app.workspace.getLeaf('tab').setViewState({
+				type: THEME_UPDATER_VIEW_TYPE,
+				active: true,
+			});
+		}, 0);
 	}
 
 	async notifyAboutUpdates() {
