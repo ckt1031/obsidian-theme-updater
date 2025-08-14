@@ -46,6 +46,13 @@ export default class ThemeUpdater extends Plugin {
 			this.addCommand(new CommandClassItem(this));
 		}
 
+		const hourlyInterval = window.setInterval(
+			this.checkForUpdates,
+			1000 * 60 * 60,
+		);
+
+		this.registerInterval(hourlyInterval);
+
 		this.addSettingTab(new ThemeUpdaterSettingTab(this.app, this));
 	}
 
