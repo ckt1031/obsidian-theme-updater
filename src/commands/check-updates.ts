@@ -14,6 +14,6 @@ export default class CheckUpdatesCommand implements Command {
 	}
 
 	callback() {
-		this.plugin.checkForUpdates();
+		this.plugin.checkForUpdates(true);
 	}
 }

@@ -56,11 +56,17 @@ export default class ThemeUpdater extends Plugin {
 		this.addSettingTab(new ThemeUpdaterSettingTab(this.app, this));
 	}
 
-	async checkForUpdates() {
+	async checkForUpdates(manual = false) {
 		this.themes = await loadThemes(this.app);
 		this.updates = await listUpdates(this.themes);
 
-		if (this.updates.length === 0) return;
+		if (this.updates.length === 0) {
+			if (manual) {
+				new Notice('No theme updates found');
+			}
+
+			return;
+		}
 
 		if (this.settings.notifyOnNewUpdate) {
 			this.notifyAboutUpdates();
