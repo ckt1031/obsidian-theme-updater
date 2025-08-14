@@ -7,6 +7,7 @@ import updateTheme, { updateAllThemes } from '@/utils/update-theme';
 
 export default class ThemeUpdaterView extends ItemView {
 	plugin: ThemeUpdater;
+	isUpdating: boolean = false;
 	abortController: AbortController;
 
 	constructor(plugin: ThemeUpdater, leaf: WorkspaceLeaf) {
@@ -68,12 +69,17 @@ export default class ThemeUpdaterView extends ItemView {
 		// Button to update the theme
 		const updateButton = buttonSplit.createEl('button', {
 			text: 'Update',
+			attr: {
+				...(this.isUpdating && { disabled: true }),
+			},
 		});
 
 		updateButton.addEventListener('click', async () => {
+			this.isUpdating = true;
+			this.onOpen(); // Reload the view
 			await updateTheme(this.plugin, theme, this.abortController);
-			// Reload the view
-			this.onOpen();
+			this.isUpdating = false;
+			this.onOpen(); // Reload the view
 		});
 	}
 
@@ -116,10 +122,13 @@ export default class ThemeUpdaterView extends ItemView {
 			text: 'Update all',
 			attr: {
 				style: 'margin-top: 10px;',
+				...(this.isUpdating && { disabled: true }),
 			},
 		});
 
 		updateAllButton.addEventListener('click', async () => {
+			this.isUpdating = true;
+			this.onOpen(); // Reload the view
 			await updateAllThemes(
 				this.plugin,
 				this.plugin.updates,
