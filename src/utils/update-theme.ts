@@ -5,19 +5,11 @@ import type { UpdateItem } from '@/types';
 
 const RAW_GITHUB_BASE_URL = 'https://raw.githubusercontent.com';
 
-function checkIfThemeIsUpdating(plugin: ThemeUpdater) {
-	return plugin.abortController !== null;
-}
-
 export default async function updateTheme(
 	plugin: ThemeUpdater,
 	theme: UpdateItem,
 	abortController: AbortController,
 ) {
-	if (checkIfThemeIsUpdating(plugin)) {
-		new Notice('Theme is already updating');
-		return;
-	}
 	try {
 		const manifestURL = `${RAW_GITHUB_BASE_URL}/${theme.repo}/HEAD/manifest.json`;
 		const themeURL = `${RAW_GITHUB_BASE_URL}/${theme.repo}/HEAD/theme.css`;
@@ -72,16 +64,11 @@ export async function updateAllThemes(
 	themes: UpdateItem[],
 	abortController: AbortController,
 ) {
-	if (checkIfThemeIsUpdating(plugin)) {
-		new Notice('Theme is already updating');
-		return;
-	}
-
 	console.log(`Updating ${themes.length} themes...`);
 
 	for (const theme of themes) {
 		// Check if the theme is already updating
-		if (plugin.abortController?.signal.aborted) {
+		if (abortController.signal.aborted) {
 			break;
 		}
 

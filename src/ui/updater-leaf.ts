@@ -24,7 +24,7 @@ export default class ThemeUpdaterView extends ItemView {
 	}
 
 	async onClose() {
-		this.plugin.abortController?.abort();
+		this.abortController.abort();
 	}
 
 	createThemeCard(theme: UpdateItem, container: HTMLElement) {

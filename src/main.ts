@@ -21,7 +21,6 @@ export const THEME_UPDATER_VIEW_TYPE = 'theme-updater-ui';
 
 export default class ThemeUpdater extends Plugin {
 	settings: ThemeUpdaterSettings;
-	abortController: AbortController | null = null;
 
 	updates: UpdateItem[];
 	themes: ObsidianVaultTheme[];
