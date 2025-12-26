@@ -1,3 +1,5 @@
+import { requestUrl } from 'obsidian';
+
 import { compare } from 'compare-versions';
 
 import type { ObsidianVaultTheme, UpdateItem } from '@/types';
@@ -21,9 +23,9 @@ interface CommunityThemeItem {
  */
 export default async function listUpdates(themes: ObsidianVaultTheme[]) {
 	try {
-		const response = await fetch(DEFAULT_RAW_THEMES_URL);
-		if (!response.ok) return [];
-		const data = await response.json();
+		const response = await requestUrl(DEFAULT_RAW_THEMES_URL);
+		if (response.status !== 200) return [];
+		const data: CommunityThemeItem[] = response.json;
 
 		const updates: UpdateItem[] = [];
 
@@ -39,11 +41,11 @@ export default async function listUpdates(themes: ObsidianVaultTheme[]) {
 
 			try {
 				const themeManifestURL = `https://raw.githubusercontent.com/${themeData.repo}/HEAD/manifest.json`;
-				const themeManifestResponse = await fetch(themeManifestURL);
+				const themeManifestResponse = await requestUrl(themeManifestURL);
 
-				if (!themeManifestResponse.ok) continue;
+				if (themeManifestResponse.status !== 200) continue;
 
-				const themeManifestData = await themeManifestResponse.json();
+				const themeManifestData = themeManifestResponse.json;
 
 				if (compare(themeManifestData.version, theme.version, '>')) {
 					updates.push({
