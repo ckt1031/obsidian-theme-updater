@@ -24,7 +24,11 @@ export default class ThemeUpdater extends Plugin {
 	updates: UpdateItem[] = [];
 	themes: ObsidianVaultTheme[] = [];
 
+	private isLoaded = false;
+
 	async onload() {
+		this.isLoaded = true;
+
 		await this.loadSettings();
 
 		// Register the view
@@ -72,6 +76,13 @@ export default class ThemeUpdater extends Plugin {
 	}
 
 	showThemeUpdaterView() {
+		if (!this.isLoaded) {
+			new Notice(
+				'Theme Updater plugin is disabled. Please enable it to view updates.',
+			);
+			return;
+		}
+
 		// Only allow one view to be open at a time, then open the new view after closing
 		this.app.workspace.iterateAllLeaves((leaf) => {
 			if (leaf.view instanceof ThemeUpdaterView) {
@@ -119,6 +130,7 @@ export default class ThemeUpdater extends Plugin {
 	}
 
 	onunload() {
+		this.isLoaded = false;
 		// Close all views
 		this.app.workspace.iterateAllLeaves((leaf) => {
 			if (leaf.view instanceof ThemeUpdaterView) {
