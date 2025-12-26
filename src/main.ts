@@ -25,6 +25,7 @@ export default class ThemeUpdater extends Plugin {
 	themes: ObsidianVaultTheme[] = [];
 
 	private isLoaded = false;
+	private activeNotices: Notice[] = [];
 
 	async onload() {
 		this.isLoaded = true;
@@ -64,7 +65,7 @@ export default class ThemeUpdater extends Plugin {
 
 		if (this.updates.length === 0) {
 			if (manual) {
-				new Notice('No theme updates found');
+				this.activeNotices.push(new Notice('No theme updates found'));
 			}
 
 			return;
@@ -77,8 +78,10 @@ export default class ThemeUpdater extends Plugin {
 
 	showThemeUpdaterView() {
 		if (!this.isLoaded) {
-			new Notice(
-				'Theme Updater plugin is disabled. Please enable it to view updates.',
+			this.activeNotices.push(
+				new Notice(
+					'Theme Updater plugin is disabled. Please enable it to view updates.',
+				),
 			);
 			return;
 		}
@@ -102,7 +105,7 @@ export default class ThemeUpdater extends Plugin {
 	async notifyAboutUpdates() {
 		const buttonID = 'theme-updater-notification-button';
 
-		new Notice(
+		const notice = new Notice(
 			stringToFragment(
 				`You have ${this.updates.length} theme update${
 					this.updates.length > 1 ? 's' : ''
@@ -111,6 +114,8 @@ export default class ThemeUpdater extends Plugin {
 
 			15000,
 		);
+
+		this.activeNotices.push(notice);
 
 		const buttonEl = document.getElementById(buttonID);
 
@@ -131,6 +136,12 @@ export default class ThemeUpdater extends Plugin {
 
 	onunload() {
 		this.isLoaded = false;
+
+		this.activeNotices.forEach((notice) => {
+			notice.hide();
+		});
+		this.activeNotices = [];
+
 		// Close all views
 		this.app.workspace.iterateAllLeaves((leaf) => {
 			if (leaf.view instanceof ThemeUpdaterView) {
