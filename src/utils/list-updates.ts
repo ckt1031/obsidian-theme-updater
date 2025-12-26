@@ -1,4 +1,4 @@
-import semver from 'semver';
+import { compare } from 'compare-versions';
 
 import type { ObsidianVaultTheme, UpdateItem } from '@/types';
 
@@ -20,35 +20,48 @@ interface CommunityThemeItem {
  * @returns The updates for the given themes
  */
 export default async function listUpdates(themes: ObsidianVaultTheme[]) {
-	const response = await fetch(DEFAULT_RAW_THEMES_URL);
-	const data = await response.json();
+	try {
+		const response = await fetch(DEFAULT_RAW_THEMES_URL);
+		if (!response.ok) return [];
+		const data = await response.json();
 
-	const updates: UpdateItem[] = [];
+		const updates: UpdateItem[] = [];
 
-	for (const theme of themes) {
-		/**
-		 * Core content is the repository of the theme, we will fetch the theme version from there
-		 */
-		const themeData = data.find(
-			(t: CommunityThemeItem) => t.name === theme.name,
-		);
+		for (const theme of themes) {
+			/**
+			 * Core content is the repository of the theme, we will fetch the theme version from there
+			 */
+			const themeData = data.find(
+				(t: CommunityThemeItem) => t.name === theme.name,
+			);
 
-		if (!themeData) continue;
+			if (!themeData) continue;
 
-		const themeManifestURL = `https://raw.githubusercontent.com/${themeData.repo}/HEAD/manifest.json`;
-		const themeManifestResponse = await fetch(themeManifestURL);
-		const themeManifestData = await themeManifestResponse.json();
+			try {
+				const themeManifestURL = `https://raw.githubusercontent.com/${themeData.repo}/HEAD/manifest.json`;
+				const themeManifestResponse = await fetch(themeManifestURL);
 
-		if (semver.gt(themeManifestData.version, theme.version)) {
-			updates.push({
-				name: theme.name,
-				currentVersion: theme.version,
-				newVersion: themeManifestData.version,
-				minAppVersion: themeManifestData.minAppVersion,
-				repo: themeData.repo,
-			});
+				if (!themeManifestResponse.ok) continue;
+
+				const themeManifestData = await themeManifestResponse.json();
+
+				if (compare(themeManifestData.version, theme.version, '>')) {
+					updates.push({
+						name: theme.name,
+						currentVersion: theme.version,
+						newVersion: themeManifestData.version,
+						minAppVersion: themeManifestData.minAppVersion,
+						repo: themeData.repo,
+					});
+				}
+			} catch (e) {
+				console.error(`Failed to check updates for ${theme.name}`, e);
+			}
 		}
-	}
 
-	return updates;
+		return updates;
+	} catch (e) {
+		console.error('Failed to list updates', e);
+		return [];
+	}
 }
