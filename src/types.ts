@@ -1,3 +1,5 @@
+export const THEME_UPDATER_VIEW_TYPE = 'obsidian-theme-updater-ui';
+
 export interface ThemeUpdaterSettings {
 	notifyOnNewUpdate: boolean;
 	checkOnStartup: boolean;

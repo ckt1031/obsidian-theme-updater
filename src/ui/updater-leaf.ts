@@ -1,8 +1,7 @@
 import { ItemView, type WorkspaceLeaf } from 'obsidian';
 
 import type ThemeUpdater from '@/main';
-import { THEME_UPDATER_VIEW_TYPE } from '@/main';
-import type { UpdateItem } from '@/types';
+import { THEME_UPDATER_VIEW_TYPE, type UpdateItem } from '@/types';
 import updateTheme, { updateAllThemes } from '@/utils/update-theme';
 
 export default class ThemeUpdaterView extends ItemView {

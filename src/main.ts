@@ -2,10 +2,11 @@ import { Notice, Plugin } from 'obsidian';
 
 import commands from './commands';
 import ThemeUpdaterSettingTab from './settings';
-import type {
-	ObsidianVaultTheme,
-	ThemeUpdaterSettings,
-	UpdateItem,
+import {
+	type ObsidianVaultTheme,
+	THEME_UPDATER_VIEW_TYPE,
+	type ThemeUpdaterSettings,
+	type UpdateItem,
 } from './types';
 import ThemeUpdaterView from './ui/updater-leaf';
 import listUpdates from './utils/list-updates';
@@ -17,13 +18,11 @@ const DEFAULT_SETTINGS: ThemeUpdaterSettings = {
 	checkOnStartup: true,
 };
 
-export const THEME_UPDATER_VIEW_TYPE = 'theme-updater-ui';
-
 export default class ThemeUpdater extends Plugin {
 	settings: ThemeUpdaterSettings;
 
-	updates: UpdateItem[];
-	themes: ObsidianVaultTheme[];
+	updates: UpdateItem[] = [];
+	themes: ObsidianVaultTheme[] = [];
 
 	async onload() {
 		await this.loadSettings();
