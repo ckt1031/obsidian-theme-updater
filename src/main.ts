@@ -1,5 +1,6 @@
-import { Notice, Plugin } from 'obsidian';
+import { addIcon, Notice, Plugin } from 'obsidian';
 
+import themeUpdateIcon from '../icons/theme-update.svg';
 import commands from './commands';
 import ThemeUpdaterSettingTab from './settings';
 import {
@@ -26,11 +27,15 @@ export default class ThemeUpdater extends Plugin {
 
 	private isLoaded = false;
 	private activeNotices: Notice[] = [];
+	private ribbonIconEl: HTMLElement | null = null;
 
 	async onload() {
 		this.isLoaded = true;
 
 		await this.loadSettings();
+
+		// Register custom icon
+		addIcon('theme-update-icon', themeUpdateIcon);
 
 		// Register the view
 		this.registerView(
@@ -50,7 +55,7 @@ export default class ThemeUpdater extends Plugin {
 		}
 
 		const hourlyInterval = window.setInterval(
-			this.checkForUpdates,
+			() => this.checkForUpdates(),
 			1000 * 60 * 60,
 		);
 
@@ -62,6 +67,8 @@ export default class ThemeUpdater extends Plugin {
 	async checkForUpdates(manual = false) {
 		this.themes = await loadThemes(this.app);
 		this.updates = await listUpdates(this.themes);
+
+		this.refreshRibbonIcon();
 
 		if (this.updates.length === 0) {
 			if (manual) {
@@ -76,6 +83,25 @@ export default class ThemeUpdater extends Plugin {
 		}
 	}
 
+	refreshRibbonIcon() {
+		if (this.updates.length > 0) {
+			if (!this.ribbonIconEl) {
+				this.ribbonIconEl = this.addRibbonIcon(
+					'theme-update-icon',
+					'Theme updates available',
+					() => {
+						this.showThemeUpdaterView();
+					},
+				);
+			}
+		} else {
+			if (this.ribbonIconEl) {
+				this.ribbonIconEl.remove();
+				this.ribbonIconEl = null;
+			}
+		}
+	}
+
 	showThemeUpdaterView() {
 		if (!this.isLoaded) {
 			this.activeNotices.push(
@@ -86,20 +112,18 @@ export default class ThemeUpdater extends Plugin {
 			return;
 		}
 
-		// Only allow one view to be open at a time, then open the new view after closing
-		this.app.workspace.iterateAllLeaves((leaf) => {
-			if (leaf.view instanceof ThemeUpdaterView) {
-				this.app.workspace.detachLeavesOfType(THEME_UPDATER_VIEW_TYPE);
-			}
-		});
+		// Check if view already exists
+		const leaves = this.app.workspace.getLeavesOfType(THEME_UPDATER_VIEW_TYPE);
+		if (leaves.length > 0) {
+			this.app.workspace.revealLeaf(leaves[0]);
+			return;
+		}
 
-		// Ensure the previous function (iterateAllLeaves) completes before opening the new view
-		setTimeout(() => {
-			this.app.workspace.getLeaf('tab').setViewState({
-				type: THEME_UPDATER_VIEW_TYPE,
-				active: true,
-			});
-		}, 0);
+		// Open the new view
+		this.app.workspace.getLeaf('tab').setViewState({
+			type: THEME_UPDATER_VIEW_TYPE,
+			active: true,
+		});
 	}
 
 	async notifyAboutUpdates() {
@@ -141,6 +165,11 @@ export default class ThemeUpdater extends Plugin {
 			notice.hide();
 		});
 		this.activeNotices = [];
+
+		if (this.ribbonIconEl) {
+			this.ribbonIconEl.remove();
+			this.ribbonIconEl = null;
+		}
 
 		// Close all views
 		this.app.workspace.iterateAllLeaves((leaf) => {

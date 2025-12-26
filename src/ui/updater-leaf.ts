@@ -13,6 +13,7 @@ export default class ThemeUpdaterView extends ItemView {
 		super(leaf);
 		this.plugin = plugin;
 		this.abortController = new AbortController();
+		this.icon = 'theme-update-icon';
 	}
 
 	getViewType() {
@@ -78,12 +79,14 @@ export default class ThemeUpdaterView extends ItemView {
 			this.onOpen(); // Reload the view
 			await updateTheme(this.plugin, theme, this.abortController);
 			this.isUpdating = false;
+			this.plugin.refreshRibbonIcon();
 			this.onOpen(); // Reload the view
 		});
 	}
 
 	closeTab() {
 		this.plugin.app.workspace.detachLeavesOfType(THEME_UPDATER_VIEW_TYPE);
+		this.plugin.refreshRibbonIcon();
 	}
 
 	async onOpen() {

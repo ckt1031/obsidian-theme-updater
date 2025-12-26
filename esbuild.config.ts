@@ -45,6 +45,9 @@ const context = await esbuild.context({
 	format: 'cjs',
 	target: 'es2018',
 	logLevel: 'info',
+	loader: {
+		'.svg': 'text',
+	},
 	sourcemap: prod ? false : 'inline',
 	treeShaking: true,
 	outdir: process.env.OUTPUT_DIR ?? 'dist',
